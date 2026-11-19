@@ -1,0 +1,1 @@
+"""RAFITACAKE SmartMargin Backend Application."""
