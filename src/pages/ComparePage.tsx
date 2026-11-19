@@ -5,23 +5,24 @@ import { Card, CardHeader, PctInput, PlatformConfiguredBadge, RupiahInput, Statu
 import { formatPct, formatRupiah } from '../lib/format'
 import { calculateMargin, roundUpTo, solvePrice } from '../lib/margin'
 import { useAppStore } from '../lib/store'
+import type { MarginResult, MarginTarget, PlatformFee } from '../lib/types'
 import { hasErrors, validatePricing } from '../lib/validation'
 
 export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
   const { state } = useAppStore()
-  const target = { minPct: state.settings.targetMinPct, maxPct: state.settings.targetMaxPct }
+  const target: MarginTarget = { minPct: state.settings.targetMinPct, maxPct: state.settings.targetMaxPct }
 
   const [selectedProductId, setSelectedProductId] = useState<string>('custom')
-  const [hpp, setHpp] = useState(45000)
-  const [packaging, setPackaging] = useState(5000)
-  const [price, setPrice] = useState(95000)
+  const [hpp, setHpp] = useState(30000)
+  const [packaging, setPackaging] = useState(4000)
+  const [price, setPrice] = useState(70000)
   const [discountPct, setDiscountPct] = useState(10)
   const [discountAmount, setDiscountAmount] = useState(0)
 
   function handleSelectProduct(id: string) {
     setSelectedProductId(id)
     if (id === 'custom') return
-    const p = state.products.find((item) => item.id === id)
+    const p = state.products.find((prod) => prod.id === id)
     if (!p) return
     setHpp(p.hpp)
     setPackaging(p.packaging)
@@ -31,19 +32,19 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
   }
 
   const totalHpp = (Number.isFinite(hpp) ? hpp : 0) + (Number.isFinite(packaging) ? packaging : 0)
-  const errors = useMemo(
-    () =>
-      validatePricing({
-        hpp: totalHpp,
-        price,
-        discountPct: Number.isFinite(discountPct) ? discountPct : 0,
-        discountAmount: Number.isFinite(discountAmount) ? discountAmount : 0,
-      }),
-    [totalHpp, price, discountPct, discountAmount],
-  )
+
+  const errors = useMemo(() => {
+    return validatePricing({
+      hpp: totalHpp,
+      price,
+      discountPct: Number.isFinite(discountPct) ? discountPct : 0,
+      discountAmount: Number.isFinite(discountAmount) ? discountAmount : 0,
+    })
+  }, [totalHpp, price, discountPct, discountAmount])
+
   const valid = !hasErrors(errors)
 
-  const rows = useMemo(() => {
+  const rows: { platform: PlatformFee; res: MarginResult; recommendedPrice: number | null }[] = useMemo(() => {
     if (!valid) return []
     return state.platforms.map((platform) => {
       const res = calculateMargin(
@@ -56,7 +57,7 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
         platform,
         target,
       )
-      const minTargetPrice = solvePrice(
+      const solved = solvePrice(
         {
           hpp: totalHpp,
           discountPct: Number.isFinite(discountPct) ? discountPct : 0,
@@ -65,25 +66,22 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
         },
         platform,
       )
-      return {
-        platform,
-        res,
-        recommendedPrice: minTargetPrice.ok ? roundUpTo(minTargetPrice.price, state.settings.roundingStep) : null,
-      }
+      const recommendedPrice = solved.ok ? roundUpTo(solved.price, state.settings.roundingStep) : null
+      return { platform, res, recommendedPrice }
     })
-  }, [valid, state.platforms, totalHpp, price, discountPct, discountAmount, target, state.settings.roundingStep])
+  }, [valid, totalHpp, price, discountPct, discountAmount, state.platforms, target, state.settings.roundingStep])
 
   const hasUnconfigured = state.platforms.some((p) => !p.configured)
 
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Simulasi Multi-Platform</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Bandingkan Aplikasi</p>
         <h1 className="mt-1 font-[var(--font-display)] text-2xl font-bold tracking-tight text-espresso sm:text-3xl">
-          Perbandingan Biaya &amp; Laba Platform
+          Perbandingan Potongan &amp; Untung Bersih
         </h1>
         <p className="mt-1 text-sm text-muted">
-          Lihat perbedaan potongan biaya admin dan keuntungan bersih di GoFood, TikTok Shop, GrabFood, maupun platform kustom.
+          Bandingkan langsung potongan admin dan sisa uang bersih yang Anda bawa pulang di tiap aplikasi online.
         </p>
       </div>
 
@@ -92,7 +90,7 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
           <div className="flex items-start gap-3">
             <IconAlert className="mt-0.5 shrink-0 text-below" size={18} />
             <p className="text-xs leading-relaxed text-espresso">
-              Sebagian platform masih menggunakan tarif <strong>0% (belum diatur)</strong>. Isi tarif sesuai dashboard merchant masing-masing agar perbandingan realistis.
+              Sebagian aplikasi masih menggunakan tarif <strong>0% (belum diatur)</strong>. Buka Pengaturan untuk mengisi komisi resmi agar perbandingannya nyata.
             </p>
           </div>
           <button
@@ -101,7 +99,7 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
             className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl bg-surface px-3.5 py-2 text-xs font-semibold text-espresso shadow-xs transition hover:bg-cream"
           >
             <IconSettings size={15} />
-            Isi Tarif Platform
+            Atur Tarif Aplikasi
           </button>
         </div>
       )}
@@ -109,12 +107,12 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
       {/* Input Produk untuk Dibandingkan */}
       <Card>
         <CardHeader
-          title="Pilih atau Masukkan Angka Produk"
-          subtitle="Satu set angka langsung disimulasikan ke semua platform"
+          title="Data Kue yang Dibandingkan"
+          subtitle="Satu set modal dan harga langsung diuji ke semua aplikasi sekaligus"
           action={
             state.products.length > 0 ? (
               <select
-                aria-label="Muat dari produk tersimpan"
+                aria-label="Pilih dari daftar kue"
                 value={selectedProductId}
                 onChange={(e) => handleSelectProduct(e.target.value)}
                 className="cursor-pointer rounded-xl border border-cream-dark bg-ivory px-3 py-1.5 text-xs font-semibold text-espresso outline-none focus:border-terracotta"
@@ -131,8 +129,8 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
         />
 
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
-          <RupiahInput label="HPP Bahan" value={hpp} onChange={setHpp} error={errors.hpp} />
-          <RupiahInput label="Kemasan / Box" value={packaging} onChange={setPackaging} />
+          <RupiahInput label="Modal Bahan" value={hpp} onChange={setHpp} error={errors.hpp} />
+          <RupiahInput label="Kemasan &amp; Box" value={packaging} onChange={setPackaging} />
           <RupiahInput label="Harga Jual" value={price} onChange={setPrice} error={errors.price} />
           <PctInput label="Diskon (%)" value={discountPct} onChange={setDiscountPct} error={errors.discountPct} />
           <RupiahInput
@@ -147,7 +145,7 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
       {valid && rows.length > 0 && (
         <>
           <Card>
-            <CardHeader title="Visualisasi Laba Bersih per Platform" subtitle="Perbandingan keuntungan kantong per 1 unit terjual" />
+            <CardHeader title="Perbandingan Untung Bersih per Aplikasi" subtitle="Urutan aplikasi dari yang paling menguntungkan bagi kantong toko" />
             <PlatformBarChart
               rows={rows.map((r) => ({
                 id: r.platform.id,
@@ -159,7 +157,7 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
             />
           </Card>
 
-          {/* Tampilan Kartu (Mobile) & Tabel (Desktop) tanpa horizontal overflow */}
+          {/* Tampilan Kartu (Mobile) & Tabel (Desktop) */}
           <div className="grid gap-4 md:hidden">
             {rows.map(({ platform, res, recommendedPrice }) => (
               <Card key={platform.id} className="space-y-3">
@@ -167,7 +165,7 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
                   <div>
                     <h3 className="text-sm font-bold text-espresso">{platform.name}</h3>
                     <p className="num text-xs text-muted">
-                      Tarif: {platform.commissionPct + platform.servicePct}%
+                      Komisi: {platform.commissionPct + platform.servicePct}%
                       {platform.fixedFee > 0 ? ` + ${formatRupiah(platform.fixedFee)}` : ''}
                     </p>
                   </div>
@@ -176,15 +174,15 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
 
                 <div className="grid grid-cols-2 gap-2 rounded-xl bg-ivory p-3 text-xs">
                   <div>
-                    <span className="text-muted">Biaya Platform</span>
+                    <span className="text-muted">Potongan Aplikasi</span>
                     <p className="num font-semibold text-loss">-{formatRupiah(res.totalFee)}</p>
                   </div>
                   <div>
-                    <span className="text-muted">Pendapatan Bersih</span>
+                    <span className="text-muted">Uang Bersih Toko</span>
                     <p className="num font-semibold text-espresso">{formatRupiah(res.netRevenue)}</p>
                   </div>
                   <div>
-                    <span className="text-muted">Laba Bersih</span>
+                    <span className="text-muted">Untung Bersih</span>
                     <p className={`num font-bold ${res.profit >= 0 ? 'text-safe' : 'text-loss'}`}>
                       {formatRupiah(res.profit)}
                     </p>
@@ -209,18 +207,18 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
 
           <Card className="hidden md:block">
             <CardHeader
-              title="Tabel Perbandingan Detail"
-              subtitle={`Termasuk rekomendasi harga jual minimal agar margin ≥ ${target.minPct}% di masing-masing platform`}
+              title="Tabel Perbandingan Rinci"
+              subtitle={`Lengkap dengan saran harga jual minimal agar margin toko tetap aman di angka minimal ${target.minPct}%`}
             />
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-cream-dark text-xs font-semibold text-muted">
-                    <th className="pb-3 pr-4">Platform</th>
-                    <th className="pb-3 pr-4">Skema Tarif</th>
-                    <th className="pb-3 pr-4 text-right">Biaya Platform</th>
-                    <th className="pb-3 pr-4 text-right">Pendapatan Bersih</th>
-                    <th className="pb-3 pr-4 text-right">Laba Bersih</th>
+                    <th className="pb-3 pr-4">Aplikasi</th>
+                    <th className="pb-3 pr-4">Skema Komisi</th>
+                    <th className="pb-3 pr-4 text-right">Potongan Aplikasi</th>
+                    <th className="pb-3 pr-4 text-right">Uang Bersih Toko</th>
+                    <th className="pb-3 pr-4 text-right">Untung Bersih</th>
                     <th className="pb-3 pr-4 text-right">Margin</th>
                     <th className="pb-3 pr-4">Status</th>
                     <th className="pb-3 text-right">Saran Harga Min. {target.minPct}%</th>
@@ -258,7 +256,7 @@ export function ComparePage({ onGoSettings }: { onGoSettings: () => void }) {
                         <StatusBadge status={res.status} />
                       </td>
                       <td className="num py-3.5 text-right font-semibold text-terracotta">
-                        {recommendedPrice ? formatRupiah(recommendedPrice) : '—'}
+                        {recommendedPrice ? formatRupiah(recommendedPrice) : '-'}
                       </td>
                     </tr>
                   ))}

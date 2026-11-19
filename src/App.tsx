@@ -6,7 +6,6 @@ import {
   IconCompare,
   IconDashboard,
   IconSettings,
-  IconShieldCheck,
   IconTarget,
 } from './components/Icons'
 import { AppProvider, useAppStore } from './lib/store'
@@ -18,12 +17,12 @@ import { ReversePricePage } from './pages/ReversePricePage'
 import { SettingsPage } from './pages/SettingsPage'
 
 const ROUTES: { id: RouteName; hash: string; label: string; shortLabel: string; icon: (size: number) => ReactNode }[] = [
-  { id: 'dashboard', hash: '#/', label: 'Dashboard', shortLabel: 'Beranda', icon: (s) => <IconDashboard size={s} /> },
-  { id: 'calculator', hash: '#/kalkulator', label: 'SmartMargin Guard', shortLabel: 'Kalkulator', icon: (s) => <IconCalculator size={s} /> },
-  { id: 'reverse', hash: '#/target-harga', label: 'ReversePrice Planner', shortLabel: 'Target', icon: (s) => <IconTarget size={s} /> },
-  { id: 'compare', hash: '#/bandingkan', label: 'Bandingkan Platform', shortLabel: 'Bandingkan', icon: (s) => <IconCompare size={s} /> },
-  { id: 'products', hash: '#/produk', label: 'Produk Tersimpan', shortLabel: 'Produk', icon: (s) => <IconBox size={s} /> },
-  { id: 'settings', hash: '#/pengaturan', label: 'Pengaturan Tarif', shortLabel: 'Tarif', icon: (s) => <IconSettings size={s} /> },
+  { id: 'dashboard', hash: '#/', label: 'Ringkasan Toko', shortLabel: 'Beranda', icon: (s) => <IconDashboard size={s} /> },
+  { id: 'calculator', hash: '#/kalkulator', label: 'Kalkulator Margin', shortLabel: 'Kalkulator', icon: (s) => <IconCalculator size={s} /> },
+  { id: 'reverse', hash: '#/target-harga', label: 'Cari Harga Jual', shortLabel: 'Target', icon: (s) => <IconTarget size={s} /> },
+  { id: 'compare', hash: '#/bandingkan', label: 'Bandingkan Aplikasi', shortLabel: 'Bandingkan', icon: (s) => <IconCompare size={s} /> },
+  { id: 'products', hash: '#/produk', label: 'Daftar Kue', shortLabel: 'Produk', icon: (s) => <IconBox size={s} /> },
+  { id: 'settings', hash: '#/pengaturan', label: 'Tarif & Pengaturan', shortLabel: 'Tarif', icon: (s) => <IconSettings size={s} /> },
 ]
 
 function routeFromHash(): RouteName {
@@ -76,16 +75,13 @@ function AppShell() {
       {/* Sidebar Desktop */}
       <aside className="hidden w-64 shrink-0 flex-col justify-between border-r border-cream-dark/80 bg-surface px-4 py-6 lg:sticky lg:top-0 lg:flex lg:h-screen">
         <div>
-          <div className="flex items-center gap-2.5 px-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-espresso text-ivory shadow-xs">
-              <IconShieldCheck size={19} />
-            </div>
-            <div>
-              <span className="block font-[var(--font-display)] text-lg font-bold tracking-tight text-espresso">
-                RAFITACAKE
-              </span>
-              <span className="block text-[11px] font-medium text-muted">Margin &amp; Promo Guard</span>
-            </div>
+          <div className="px-2">
+            <img
+              src="/logo-rafita.png"
+              alt="Rafita's Cake"
+              className="h-12 w-auto object-contain"
+            />
+            <span className="mt-1 block text-[11px] font-medium text-muted">Kalkulator Margin &amp; Promo</span>
           </div>
 
           <nav className="mt-8 space-y-1" aria-label="Navigasi utama">
@@ -118,12 +114,12 @@ function AppShell() {
         </div>
 
         <div className="rounded-2xl border border-cream-dark/70 bg-ivory p-3.5 text-xs">
-          <p className="font-semibold text-espresso">Target Aman Toko</p>
+          <p className="font-semibold text-espresso">Target Margin Toko</p>
           <p className="num mt-0.5 text-muted">
-            {state.settings.targetMinPct}% – {state.settings.targetMaxPct}% sales margin
+            {state.settings.targetMinPct}% sampai {state.settings.targetMaxPct}% keuntungan bersih
           </p>
           <p className="mt-2 text-[11px] leading-relaxed text-muted">
-            Data tersimpan otomatis di browser (localStorage).
+            Data tersimpan aman di browser perangkat ini.
           </p>
         </div>
       </aside>
@@ -133,10 +129,7 @@ function AppShell() {
         {/* Topbar Mobile */}
         <header className="sticky top-0 z-20 flex items-center justify-between border-b border-cream-dark/80 bg-surface/95 px-4 py-3 backdrop-blur-sm lg:hidden">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-espresso text-ivory">
-              <IconShieldCheck size={16} />
-            </div>
-            <span className="font-[var(--font-display)] text-base font-bold text-espresso">RAFITACAKE</span>
+            <img src="/logo-rafita.png" alt="Rafita's Cake" className="h-8 w-auto object-contain" />
           </div>
           <button
             type="button"
@@ -161,10 +154,10 @@ function AppShell() {
               <IconAlert size={16} className="mt-0.5 shrink-0 text-below" />
               <span>
                 {!storageAvailable
-                  ? 'Penyimpanan browser tidak tersedia (mode privat). Perubahan hanya bertahan selama tab terbuka.'
+                  ? 'Browser dalam mode privat. Data hanya tersimpan selama tab ini terbuka.'
                   : recovered
-                    ? 'Data penyimpanan sebelumnya rusak dan telah dipulihkan ke kondisi awal yang aman.'
-                    : 'Gagal menyimpan ke browser (penyimpanan penuh).'}
+                    ? 'Data tersimpan sempat bermasalah dan otomatis dikembalikan ke setelan awal.'
+                    : 'Penyimpanan browser penuh, perubahan belum tersimpan.'}
               </span>
             </div>
           )}

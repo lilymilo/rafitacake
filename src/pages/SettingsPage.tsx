@@ -67,7 +67,7 @@ function PlatformEditorCard({
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <PctInput
-            label="Komisi Platform (%)"
+            label="Komisi Penjualan (%)"
             value={commissionPct}
             onChange={setCommissionPct}
             error={errors.commissionPct}
@@ -79,7 +79,7 @@ function PlatformEditorCard({
             error={errors.servicePct}
           />
           <RupiahInput
-            label="Biaya Tetap / Order"
+            label="Biaya Tetap per Pesanan"
             value={fixedFee}
             onChange={setFixedFee}
             error={errors.fixedFee}
@@ -94,8 +94,8 @@ function PlatformEditorCard({
               onChange={(e) => setFeeBase(e.target.value as FeeBase)}
               className="mt-1.5 w-full cursor-pointer rounded-xl border border-cream-dark bg-surface px-3 py-2 text-xs font-medium text-espresso outline-none focus:border-terracotta"
             >
-              <option value="afterDiscount">Harga setelah diskon (umum)</option>
-              <option value="beforeDiscount">Harga sebelum diskon (harga awal)</option>
+              <option value="afterDiscount">Dari harga setelah diskon (paling umum)</option>
+              <option value="beforeDiscount">Dari harga sebelum diskon (harga awal)</option>
             </select>
           </div>
           <div>
@@ -104,7 +104,7 @@ function PlatformEditorCard({
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Mis. cek dashboard merchant 18 Nov"
+              placeholder="Contoh: Paket promo resto pilihan, akun pro"
               className="mt-1.5 w-full rounded-xl border border-cream-dark bg-surface px-3 py-2 text-xs text-espresso outline-none focus:border-terracotta"
             />
           </div>
@@ -116,7 +116,7 @@ function PlatformEditorCard({
               <IconShieldCheck size={15} /> Tarif {platform.name} tersimpan.
             </span>
           ) : (
-            <span className="text-[11px] text-muted">Klik simpan untuk menandai tarif sudah dikonfirmasi.</span>
+            <span className="text-[11px] text-muted">Pastikan angka komisi sesuai dashboard toko Anda.</span>
           )}
           <button
             type="submit"
@@ -174,12 +174,12 @@ export function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Konfigurasi</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Pengaturan Toko</p>
         <h1 className="mt-1 font-[var(--font-display)] text-2xl font-bold tracking-tight text-espresso sm:text-3xl">
           Pengaturan Tarif Platform &amp; Target Margin
         </h1>
         <p className="mt-1 text-sm text-muted">
-          Sesuaikan persentase komisi berdasarkan dashboard merchant resmi Anda serta batas aman margin toko.
+          Sesuaikan persentase komisi aplikasi dan atur batas keuntungan sehat untuk toko Anda.
         </p>
       </div>
 
@@ -187,9 +187,9 @@ export function SettingsPage() {
       <div className="flex items-start gap-3 rounded-2xl border border-cream-dark bg-cream/70 p-4 text-xs leading-relaxed text-espresso">
         <IconInfo size={18} className="mt-0.5 shrink-0 text-terracotta" />
         <div>
-          <p className="font-semibold">Mengapa tarif awal bernilai 0%?</p>
+          <p className="font-semibold">Kenapa potongan aplikasi awalnya 0%?</p>
           <p className="mt-0.5 text-muted">
-            Tarif komisi GoFood, TikTok Shop, dan GrabFood berbeda per kategori merchant, program promo, dan dapat berubah sewaktu-waktu. RAFITACAKE tidak mengarang angka tarif—Anda mengisinya langsung agar hasil kalkulator benar-benar sesuai kondisi toko Anda.
+            Karena potongan komisi GoFood, GrabFood, atau ShopeeFood bisa berbeda tergantung status merchant dan paket promo toko Anda. Kami tidak memasukkan angka tebakan, silakan isi sesuai potongan resmi di aplikasi Anda agar hitungannya nyata.
           </p>
         </div>
       </div>
@@ -197,15 +197,15 @@ export function SettingsPage() {
       {/* Target Margin Toko */}
       <Card>
         <CardHeader
-          title="Target Batas Aman Margin Toko"
-          subtitle="Nilai awal 35%–50% berasal dari kebutuhan toko narasumber (dapat diubah sesuai produk)"
+          title="Standar Keuntungan Aman Toko"
+          subtitle="Patokan margin sehat untuk toko kue (standar umum 35% sampai 50%)"
         />
         <form onSubmit={saveTarget} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <PctInput label="Batas Aman Minimal (%)" value={minPct} onChange={setMinPct} error={targetErrors.minPct} />
-            <PctInput label="Batas Target Maksimal (%)" value={maxPct} onChange={setMaxPct} error={targetErrors.maxPct} />
+            <PctInput label="Minimal Untung Bersih (%)" value={minPct} onChange={setMinPct} error={targetErrors.minPct} />
+            <PctInput label="Maksimal Target Untung (%)" value={maxPct} onChange={setMaxPct} error={targetErrors.maxPct} />
             <div>
-              <span className="block text-xs font-semibold text-espresso">Pembulatan Harga Default</span>
+              <span className="block text-xs font-semibold text-espresso">Aturan Pembulatan Harga</span>
               <div className="mt-1.5 flex gap-2">
                 {ROUNDING_STEPS.map((step) => (
                   <button
@@ -247,13 +247,13 @@ export function SettingsPage() {
       {/* Daftar Platform */}
       <div className="space-y-4">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-          <h2 className="text-base font-bold text-espresso">Tarif per Platform</h2>
+          <h2 className="text-base font-bold text-espresso">Tarif Komisi per Aplikasi</h2>
           <form onSubmit={handleAddPlatform} className="flex gap-2">
             <input
               type="text"
               value={newPlatformName}
               onChange={(e) => setNewPlatformName(e.target.value)}
-              placeholder="Tambah platform lain (mis. WhatsApp)"
+              placeholder="Tambah aplikasi lain (contoh: WhatsApp)"
               className="rounded-xl border border-cream-dark bg-surface px-3 py-1.5 text-xs text-espresso outline-none focus:border-terracotta"
             />
             <button
@@ -280,8 +280,8 @@ export function SettingsPage() {
       {/* Zona Reset Data */}
       <Card className="border-loss/25">
         <CardHeader
-          title="Reset Penyimpanan Lokal"
-          subtitle="Mengembalikan seluruh produk, tarif platform, dan riwayat ke kondisi awal"
+          title="Reset Data Toko"
+          subtitle="Mengembalikan seluruh daftar kue, tarif aplikasi, dan riwayat ke setelan awal"
         />
         {!confirmReset ? (
           <button
@@ -293,7 +293,7 @@ export function SettingsPage() {
           </button>
         ) : (
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs font-medium text-espresso">Yakin hapus semua data di browser ini?</span>
+            <span className="text-xs font-medium text-espresso">Yakin ingin menghapus seluruh data yang tersimpan di browser ini?</span>
             <button
               type="button"
               onClick={() => {

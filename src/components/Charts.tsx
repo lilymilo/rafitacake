@@ -7,11 +7,11 @@ import type { MarginResult, MarginTarget } from '../lib/types'
 export function PriceBreakdownBar({ result }: { result: MarginResult }) {
   const base = Math.max(result.price, 1)
   const items = [
-    { label: 'HPP + Kemasan', value: Math.max(0, result.hpp), color: 'bg-espresso' },
-    { label: 'Biaya Platform', value: Math.max(0, result.totalFee), color: 'bg-below' },
-    { label: 'Diskon', value: Math.max(0, result.discountValue), color: 'bg-cream-dark' },
+    { label: 'Modal (Bahan + Box)', value: Math.max(0, result.hpp), color: 'bg-espresso' },
+    { label: 'Potongan Aplikasi', value: Math.max(0, result.totalFee), color: 'bg-below' },
+    { label: 'Diskon Toko', value: Math.max(0, result.discountValue), color: 'bg-cream-dark' },
     {
-      label: result.profit >= 0 ? 'Laba Bersih' : 'Rugi',
+      label: result.profit >= 0 ? 'Untung Bersih' : 'Tekor (Rugi)',
       value: Math.max(0, result.profit),
       color: result.profit >= 0 ? 'bg-safe' : 'bg-loss',
     },
@@ -39,7 +39,7 @@ export function PriceBreakdownBar({ result }: { result: MarginResult }) {
             <span className={`h-2.5 w-2.5 rounded-sm ${item.color}`} />
             <span>{item.label}:</span>
             <strong className="num font-semibold text-espresso">
-              {item.label === 'Rugi' ? formatRupiah(result.profit) : formatRupiah(item.value)}
+              {item.label === 'Tekor (Rugi)' ? formatRupiah(result.profit) : formatRupiah(item.value)}
             </strong>
           </span>
         ))}
@@ -49,43 +49,53 @@ export function PriceBreakdownBar({ result }: { result: MarginResult }) {
 }
 
 /**
- * Grafik SVG Kurva Margin vs Diskon dengan zona target aman.
+ * Kurva sensitivitas margin terhadap kenaikan diskon.
+ * Menampilkan zona aman target (warna hijau lembut) dan posisi diskon aktif saat ini.
  */
 export function MarginCurveChart({
   points,
   activeDiscountPct,
   target,
 }: {
-  points: { discountPct: number; marginPct: number | null; profit: number }[]
+  points: { discountPct: number; marginPct: number | null }[]
   activeDiscountPct: number
   target: MarginTarget
 }) {
-  const valid = points.filter((p): p is { discountPct: number; marginPct: number; profit: number } => p.marginPct !== null)
-  if (valid.length < 2) return null
+  const valid = points.filter((p): p is { discountPct: number; marginPct: number } => p.marginPct !== null)
+  if (valid.length === 0) return null
 
-  const width = 460
-  const height = 190
-  const pad = { top: 16, right: 16, bottom: 28, left: 42 }
+  const width = 560
+  const height = 210
+  const pad = { top: 20, right: 24, bottom: 32, left: 44 }
+
   const innerW = width - pad.left - pad.right
   const innerH = height - pad.top - pad.bottom
 
-  const maxD = valid[valid.length - 1].discountPct || 60
-  const rawMinY = Math.min(-10, ...valid.map((p) => p.marginPct))
-  const rawMaxY = Math.max(target.maxPct + 10, ...valid.map((p) => p.marginPct))
-  const minY = Math.floor(rawMinY / 10) * 10
-  const maxY = Math.ceil(rawMaxY / 10) * 10
+  const margins = valid.map((p) => p.marginPct)
+  const rawMinY = Math.min(...margins, target.minPct, 0)
+  const rawMaxY = Math.max(...margins, target.maxPct)
+  const minY = Math.floor(rawMinY / 10) * 10 - 5
+  const maxY = Math.ceil(rawMaxY / 10) * 10 + 5
+  const rangeY = Math.max(1, maxY - minY)
 
-  const xOf = (d: number) => pad.left + (d / maxD) * innerW
-  const yOf = (m: number) => pad.top + ((maxY - m) / Math.max(1, maxY - minY)) * innerH
+  const minX = 0
+  const maxX = Math.max(...valid.map((p) => p.discountPct), 50)
+  const rangeX = Math.max(1, maxX - minX)
+
+  const xOf = (d: number) => pad.left + ((d - minX) / rangeX) * innerW
+  const yOf = (m: number) => pad.top + ((maxY - m) / rangeY) * innerH
 
   const pathD = valid
     .map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${xOf(p.discountPct).toFixed(1)} ${yOf(p.marginPct).toFixed(1)}`)
     .join(' ')
 
-  const safeTop = yOf(Math.min(maxY, target.maxPct))
-  const safeBottom = yOf(Math.max(minY, target.minPct))
+  const safeTop = Math.max(pad.top, yOf(target.maxPct))
+  const safeBottom = Math.min(height - pad.bottom, yOf(target.minPct))
+
+  const activeClamped = Math.min(maxX, Math.max(minX, activeDiscountPct))
+  const activeX = xOf(activeClamped)
+
   const zeroY = yOf(0)
-  const activeX = xOf(Math.min(maxD, Math.max(0, activeDiscountPct)))
 
   return (
     <div className="w-full overflow-hidden">
@@ -112,11 +122,11 @@ export function MarginCurveChart({
                 x2={width - pad.right}
                 y1={yOf(val)}
                 y2={yOf(val)}
-                stroke={val === 0 ? '#B83535' : '#E6DDD0'}
+                stroke={val === 0 ? '#B83535' : '#ECD7DA'}
                 strokeDasharray={val === 0 ? '4 3' : undefined}
                 strokeWidth={val === 0 ? 1.2 : 0.8}
               />
-              <text x={pad.left - 6} y={yOf(val) + 3.5} textAnchor="end" fontSize="9.5" fill="#705C50">
+              <text x={pad.left - 6} y={yOf(val) + 3.5} textAnchor="end" fontSize="9.5" fill="#735661">
                 {val}%
               </text>
             </g>
@@ -124,11 +134,11 @@ export function MarginCurveChart({
 
         {/* Label zona aman */}
         <text x={width - pad.right - 4} y={safeTop + 11} textAnchor="end" fontSize="9" fontWeight="600" fill="#256445">
-          Zona Aman ({target.minPct}%–{target.maxPct}%)
+          Zona Aman ({target.minPct}% sampai {target.maxPct}%)
         </text>
 
         {/* Kurva margin */}
-        <path d={pathD} fill="none" stroke="#C25E44" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+        <path d={pathD} fill="none" stroke="#D44365" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
 
         {/* Garis posisi diskon saat ini */}
         <line
@@ -136,7 +146,7 @@ export function MarginCurveChart({
           x2={activeX}
           y1={pad.top}
           y2={height - pad.bottom}
-          stroke="#2C1E16"
+          stroke="#2C1820"
           strokeWidth={1.3}
           strokeDasharray="3 3"
         />
@@ -151,7 +161,7 @@ export function MarginCurveChart({
               y={height - 8}
               textAnchor="middle"
               fontSize="9.5"
-              fill="#705C50"
+              fill="#735661"
             >
               {p.discountPct}%
             </text>
@@ -189,7 +199,7 @@ export function PlatformBarChart({
               <span className="font-semibold text-espresso">
                 {row.name}{' '}
                 {!row.configured && (
-                  <span className="font-normal text-below">(tarif belum diatur)</span>
+                  <span className="font-normal text-below">(belum diatur)</span>
                 )}
               </span>
               <span className={`num font-semibold ${positive ? 'text-espresso' : 'text-loss'}`}>

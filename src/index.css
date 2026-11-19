@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* Palet Modern Fintech x Bakery */
-  --color-ivory: #FAF7F2;
-  --color-cream: #F3ECE1;
-  --color-cream-dark: #E6DDD0;
+  /* Palet Modern & Minimalist - Soft Rose & Deep Berry Espresso */
+  --color-ivory: #FCF7F5;
+  --color-cream: #F8EFF1;
+  --color-cream-dark: #ECD7DA;
   --color-surface: #FFFFFF;
-  --color-espresso: #2C1E16;
-  --color-espresso-light: #4A3528;
-  --color-muted: #705C50;
-  --color-terracotta: #C25E44;
-  --color-terracotta-hover: #A94D35;
-  --color-terracotta-soft: #F9EAE5;
+  --color-espresso: #2C1820;
+  --color-espresso-light: #4A2B37;
+  --color-muted: #735661;
+  --color-terracotta: #D44365;
+  --color-terracotta-hover: #B82C4D;
+  --color-terracotta-soft: #FDF0F2;
 
   /* Semantik Status Margin */
   --color-safe: #256445;
@@ -27,9 +27,9 @@
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: "Fraunces", Georgia, serif;
 
-  /* Shadow lembut */
-  --shadow-card: 0 1px 3px rgba(44, 30, 22, 0.05), 0 4px 14px rgba(44, 30, 22, 0.03);
-  --shadow-float: 0 8px 28px rgba(44, 30, 22, 0.09);
+  /* Shadow lembut bernuansa neutral berry */
+  --shadow-card: 0 1px 3px rgba(44, 24, 32, 0.04), 0 4px 14px rgba(44, 24, 32, 0.03);
+  --shadow-float: 0 8px 28px rgba(44, 24, 32, 0.08);
 }
 
 @layer base {
@@ -54,7 +54,7 @@
   }
 }
 
-/* Custom range slider agar selaras dengan tema espresso/terracotta */
+/* Custom range slider agar selaras dengan tema rose & berry */
 input[type="range"].bakery-slider {
   -webkit-appearance: none;
   appearance: none;
@@ -72,7 +72,7 @@ input[type="range"].bakery-slider::-webkit-slider-thumb {
   border-radius: 9999px;
   background: var(--color-terracotta);
   border: 3px solid var(--color-surface);
-  box-shadow: 0 1px 4px rgba(44, 30, 22, 0.25);
+  box-shadow: 0 1px 4px rgba(44, 24, 32, 0.2);
   transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
@@ -87,5 +87,5 @@ input[type="range"].bakery-slider::-moz-range-thumb {
   border-radius: 9999px;
   background: var(--color-terracotta);
   border: 3px solid var(--color-surface);
-  box-shadow: 0 1px 4px rgba(44, 30, 22, 0.25);
+  box-shadow: 0 1px 4px rgba(44, 24, 32, 0.2);
 }

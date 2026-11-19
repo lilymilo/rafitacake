@@ -47,25 +47,25 @@ const STATUS_CONFIG: Record<
     label: 'Rugi',
     badgeClass: 'bg-loss-soft text-loss border-loss/20',
     borderClass: 'border-loss/40 bg-loss-soft/50',
-    desc: () => 'Harga jual tidak menutup HPP dan potongan platform.',
+    desc: () => 'Harga jual belum menutup modal bahan dan potongan aplikasi.',
   },
   below: {
     label: 'Di Bawah Target',
     badgeClass: 'bg-below-soft text-below border-below/25',
     borderClass: 'border-below/40 bg-below-soft/50',
-    desc: (t) => `Masih untung, tetapi margin di bawah target minimal ${t.minPct}%.`,
+    desc: (t) => `Masih untung, tapi di bawah target minimal toko (${t.minPct}%).`,
   },
   safe: {
     label: 'Margin Aman',
     badgeClass: 'bg-safe-soft text-safe border-safe/20',
     borderClass: 'border-safe/35 bg-safe-soft/50',
-    desc: (t) => `Sesuai target aman toko (${t.minPct}%–${t.maxPct}%).`,
+    desc: (t) => `Margin pas dan sehat sesuai target toko (${t.minPct}% sampai ${t.maxPct}%).`,
   },
   above: {
     label: 'Di Atas Target',
     badgeClass: 'bg-above-soft text-above border-above/20',
     borderClass: 'border-above/35 bg-above-soft/50',
-    desc: (t) => `Melebihi ${t.maxPct}%. Laba tebal, cek apakah harga masih kompetitif.`,
+    desc: (t) => `Laba tebal di atas ${t.maxPct}%, pastikan harga tetap ramah di kantong pembeli.`,
   },
 }
 
@@ -96,7 +96,7 @@ export function DemoBadge() {
       title="Data contoh untuk simulasi, bukan transaksi toko sungguhan"
       className="inline-flex items-center rounded-md border border-cream-dark bg-cream px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted"
     >
-      Simulasi
+      Data Contoh
     </span>
   )
 }
@@ -104,11 +104,11 @@ export function DemoBadge() {
 export function PlatformConfiguredBadge({ configured }: { configured: boolean }) {
   return configured ? (
     <span className="inline-flex items-center rounded-full bg-safe-soft px-2 py-0.5 text-[11px] font-medium text-safe">
-      Tarif diisi
+      Tarif diatur
     </span>
   ) : (
     <span className="inline-flex items-center rounded-full bg-below-soft px-2 py-0.5 text-[11px] font-medium text-below">
-      Tarif belum diatur
+      Belum ada tarif
     </span>
   )
 }

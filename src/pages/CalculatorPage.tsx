@@ -149,55 +149,55 @@ export function CalculatorPage({
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">SmartMargin Guard</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Kalkulator Promo</p>
         <h1 className="mt-1 font-[var(--font-display)] text-2xl font-bold tracking-tight text-espresso sm:text-3xl">
           Kalkulator Margin &amp; Simulasi Diskon
         </h1>
         <p className="mt-1 text-sm text-muted">
-          Geser diskon untuk melihat langsung apakah promo masih aman atau mulai menggerus keuntungan toko.
+          Coba geser besaran diskon dan lihat langsung: toko masih untung pas, untung tebal, atau malah tekor.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Form Input */}
         <Card className="lg:col-span-5">
-          <CardHeader title="Data Produk &amp; Promo" subtitle="Isi modal produksi dan rencana harga jual" />
+          <CardHeader title="Modal &amp; Rencana Harga" subtitle="Masukkan modal bahan, kemasan, dan harga yang mau dipasang" />
 
           <div className="space-y-4">
             <div>
               <label htmlFor="calc-name" className="block text-xs font-semibold text-espresso">
-                Nama Produk
+                Nama Kue / Produk
               </label>
               <input
                 id="calc-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Contoh: Kue Tart Coklat 20cm"
+                placeholder="Contoh: Brownies Fudgy 20cm"
                 className="mt-1.5 w-full rounded-xl border border-cream-dark bg-surface px-3 py-2 text-sm text-espresso outline-none transition focus:border-terracotta"
               />
             </div>
 
             <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
               <RupiahInput
-                label="HPP Bahan &amp; Produksi"
+                label="Modal Bahan (HPP)"
                 value={hpp}
                 onChange={setHpp}
                 error={errors.hpp}
-                helper="Biaya bahan baku per unit"
+                helper="Biaya adonan &amp; bahan kue"
               />
               <RupiahInput
-                label="Kemasan / Box"
+                label="Biaya Kemasan &amp; Box"
                 value={packaging}
                 onChange={setPackaging}
-                helper="Kardus, pita, stiker"
+                helper="Kotak, pita, &amp; stiker"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between">
                 <label htmlFor="calc-platform" className="text-xs font-semibold text-espresso">
-                  Platform Penjualan
+                  Pilih Aplikasi Penjualan
                 </label>
                 <PlatformConfiguredBadge configured={platform.configured} />
               </div>
@@ -217,14 +217,14 @@ export function CalculatorPage({
                 <p className="mt-1.5 text-xs text-below">
                   Tarif {platform.name} masih 0%.{' '}
                   <button type="button" onClick={onGoSettings} className="cursor-pointer font-semibold underline">
-                    Isi tarif di Pengaturan
+                    Atur komisi resmi di Pengaturan
                   </button>
                 </p>
               )}
             </div>
 
             <RupiahInput
-              label="Harga Jual (Sebelum Diskon)"
+              label="Harga Jual Sebelum Diskon"
               value={price}
               onChange={setPrice}
               error={errors.price}
@@ -234,7 +234,7 @@ export function CalculatorPage({
             <div className="rounded-xl border border-cream-dark/70 bg-ivory/70 p-3.5">
               <div className="flex items-center justify-between">
                 <label htmlFor="discount-slider" className="text-xs font-semibold text-espresso">
-                  Simulasi Diskon Penjual
+                  Uji Diskon Promo Toko
                 </label>
                 <span className="num rounded-lg bg-terracotta-soft px-2 py-0.5 text-xs font-bold text-terracotta">
                   {Number.isFinite(discountPct) ? discountPct : 0}%
@@ -258,7 +258,7 @@ export function CalculatorPage({
                   error={errors.discountPct}
                 />
                 <RupiahInput
-                  label="Potongan Tambahan"
+                  label="Voucher Toko (Rp)"
                   value={discountAmount}
                   onChange={setDiscountAmount}
                   error={errors.discountAmount}
@@ -274,7 +274,7 @@ export function CalculatorPage({
                 className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-terracotta px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-terracotta-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <IconPlus size={16} />
-                {productId ? 'Perbarui Produk' : 'Simpan Produk'}
+                {productId ? 'Perbarui Data Kue' : 'Simpan ke Daftar Kue'}
               </button>
               <button
                 type="button"
@@ -292,7 +292,7 @@ export function CalculatorPage({
                 }
                 className="cursor-pointer rounded-xl border border-cream-dark bg-surface px-4 py-2.5 text-sm font-semibold text-espresso transition hover:bg-cream"
               >
-                Hitung Harga Target
+                Hitung Balik Harga
               </button>
             </div>
 
@@ -314,29 +314,29 @@ export function CalculatorPage({
                   <StatusBadge status={result.status} />
                   {safeMaxDisc && safeMaxDisc.ok && (
                     <span className="num text-xs font-semibold text-espresso">
-                      Batas aman diskon maks: {formatPct(safeMaxDisc.maxDiscountPct)}
+                      Batas aman diskon maksimal: {formatPct(safeMaxDisc.maxDiscountPct)}
                     </span>
                   )}
                   {safeMaxDisc && !safeMaxDisc.ok && safeMaxDisc.reason === 'notAchievable' && (
                     <span className="text-xs font-semibold text-loss">
-                      Tanpa diskon pun margin belum mencapai {target.minPct}%
+                      Harga ini belum mencapai margin minimal {target.minPct}%
                     </span>
                   )}
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
                   <div>
-                    <p className="text-xs text-muted">Laba Bersih / Unit</p>
+                    <p className="text-xs text-muted">Laba Bersih per Pcs</p>
                     <p className={`num mt-0.5 text-2xl font-bold ${result.profit >= 0 ? 'text-espresso' : 'text-loss'}`}>
                       {formatRupiah(result.profit)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted">Sales Margin</p>
+                    <p className="text-xs text-muted">Margin Keuntungan</p>
                     <p className="num mt-0.5 text-2xl font-bold text-espresso">{formatPct(result.marginPct)}</p>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
-                    <p className="text-xs text-muted">Markup dari HPP</p>
+                    <p className="text-xs text-muted">Markup dari Modal</p>
                     <p className="num mt-0.5 text-lg font-semibold text-espresso-light">{formatPct(result.markupPct)}</p>
                   </div>
                 </div>
@@ -346,7 +346,7 @@ export function CalculatorPage({
 
               {/* Rincian Angka */}
               <Card>
-                <CardHeader title="Rincian Perhitungan" subtitle="Transparan langkah demi langkah (Sales Margin)" />
+                <CardHeader title="Rincian Perhitungan" subtitle="Transparan langkah demi langkah (Margin Keuntungan)" />
                 <PriceBreakdownBar result={result} />
 
                 <dl className="mt-5 divide-y divide-cream-dark/60 text-sm">
@@ -355,31 +355,31 @@ export function CalculatorPage({
                     <dd className="num font-medium text-espresso">{formatRupiah(result.price)}</dd>
                   </div>
                   <div className="flex justify-between py-2">
-                    <dt className="text-muted">Total Diskon &amp; Voucher Penjual</dt>
+                    <dt className="text-muted">Potongan Diskon &amp; Voucher Toko</dt>
                     <dd className="num font-medium text-loss">-{formatRupiah(result.discountValue)}</dd>
                   </div>
                   <div className="flex justify-between py-2">
-                    <dt className="font-medium text-espresso">Harga Bayar Pembeli (Net Price)</dt>
+                    <dt className="font-medium text-espresso">Harga yang Dibayar Pembeli</dt>
                     <dd className="num font-semibold text-espresso">{formatRupiah(result.netPrice)}</dd>
                   </div>
                   <div className="flex justify-between py-2">
                     <dt className="text-muted">
                       Potongan {platform.name} ({platform.commissionPct + platform.servicePct}%
-                      {platform.feeBase === 'beforeDiscount' ? ' dari harga awal' : ' dari harga diskon'}
+                      {platform.feeBase === 'beforeDiscount' ? ' dari harga awal' : ' dari harga setelah diskon'}
                       {platform.fixedFee > 0 ? ` + ${formatRupiah(platform.fixedFee)}` : ''})
                     </dt>
                     <dd className="num font-medium text-loss">-{formatRupiah(result.totalFee)}</dd>
                   </div>
                   <div className="flex justify-between py-2">
-                    <dt className="font-medium text-espresso">Pendapatan Bersih Diterima Toko</dt>
+                    <dt className="font-medium text-espresso">Uang Bersih yang Diterima Toko</dt>
                     <dd className="num font-semibold text-espresso">{formatRupiah(result.netRevenue)}</dd>
                   </div>
                   <div className="flex justify-between py-2">
-                    <dt className="text-muted">Total HPP (Bahan + Kemasan)</dt>
+                    <dt className="text-muted">Total Modal (Bahan + Kemasan)</dt>
                     <dd className="num font-medium text-loss">-{formatRupiah(result.hpp)}</dd>
                   </div>
                   <div className="flex justify-between pt-3 text-base">
-                    <dt className="font-bold text-espresso">Keuntungan Bersih</dt>
+                    <dt className="font-bold text-espresso">Keuntungan Bersih Toko</dt>
                     <dd className={`num font-bold ${result.profit >= 0 ? 'text-safe' : 'text-loss'}`}>
                       {formatRupiah(result.profit)} ({formatPct(result.marginPct)})
                     </dd>
@@ -390,8 +390,8 @@ export function CalculatorPage({
               {/* Grafik Kurva Margin vs Diskon */}
               <Card>
                 <CardHeader
-                  title="Grafik Sensitivitas Diskon"
-                  subtitle="Menunjukkan penurunan margin seiring kenaikan diskon pada harga jual saat ini"
+                  title="Grafik Ketahanan Diskon"
+                  subtitle="Lihat di batas diskon berapa persen toko Anda mulai merugi pada harga ini"
                 />
                 <MarginCurveChart
                   points={curve}
@@ -405,8 +405,8 @@ export function CalculatorPage({
               <div className="flex items-start gap-3 text-sm text-loss">
                 <IconAlert size={20} className="mt-0.5 shrink-0" />
                 <div>
-                  <p className="font-semibold">Input belum valid untuk dihitung</p>
-                  <p className="mt-1 text-xs text-muted">Periksa pesan berwarna merah pada form di sebelah kiri.</p>
+                  <p className="font-semibold">Periksa data yang belum lengkap</p>
+                  <p className="mt-1 text-xs text-muted">Pastikan modal dan harga jual sudah diisi angka yang benar pada form di sebelah kiri.</p>
                 </div>
               </div>
             </Card>

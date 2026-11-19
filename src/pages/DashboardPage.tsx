@@ -52,17 +52,17 @@ export function DashboardPage({
 
   return (
     <div className="space-y-6">
-      {/* Header Editorial */}
+      {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Ringkasan Operasional</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Ringkasan Toko</p>
           <h1 className="mt-1 font-[var(--font-display)] text-2xl font-bold tracking-tight text-espresso sm:text-3xl">
-            Kendali Margin RAFITACAKE
+            Pantauan Margin &amp; Promo
           </h1>
           <p className="mt-1 text-sm text-muted">
-            Pantau keamanan margin produk sebelum promo dipasang. Target aman saat ini:{' '}
+            Cek kesehatan keuntungan produk sebelum diskon dipasang. Target aman saat ini:{' '}
             <strong className="text-espresso">
-              {target.minPct}%–{target.maxPct}%
+              {target.minPct}% sampai {target.maxPct}%
             </strong>
             .
           </p>
@@ -94,10 +94,10 @@ export function DashboardPage({
             <IconAlert className="mt-0.5 shrink-0 text-below" size={18} />
             <div className="text-xs leading-relaxed text-espresso">
               <p className="font-semibold">
-                {unconfiguredCount} dari {state.platforms.length} platform belum memiliki tarif biaya admin.
+                {unconfiguredCount} dari {state.platforms.length} aplikasi jualan belum diatur tarif komisinya.
               </p>
               <p className="mt-0.5 text-muted">
-                RAFITACAKE tidak mengarang tarif marketplace. Masukkan persentase komisi dari dashboard merchant Anda agar hasil perhitungan akurat.
+                Tiap aplikasi punya potongan komisi berbeda. Masukkan tarif resmi dari dashboard toko Anda agar hitungan laba tidak meleset.
               </p>
             </div>
           </div>
@@ -117,14 +117,14 @@ export function DashboardPage({
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cream-dark bg-cream/70 px-4 py-3 text-xs">
           <div className="flex items-center gap-2.5 text-espresso">
             <DemoBadge />
-            <span>Sebagian produk di bawah adalah data contoh simulasi untuk uji coba, bukan transaksi sungguhan.</span>
+            <span>Daftar di bawah masih berisi data contoh simulasi untuk latihan, bukan transaksi asli toko.</span>
           </div>
           <button
             type="button"
             onClick={clearDemoProducts}
             className="cursor-pointer font-semibold text-terracotta hover:underline"
           >
-            Hapus data simulasi
+            Hapus data contoh
           </button>
         </div>
       )}
@@ -139,7 +139,7 @@ export function DashboardPage({
         <MetricCard
           label="Rata-rata Margin"
           value={formatPct(summary.avgMargin)}
-          hint={`Target toko ${target.minPct}%–${target.maxPct}%`}
+          hint={`Target toko ${target.minPct}% sampai ${target.maxPct}%`}
           accent={
             summary.avgMargin === null
               ? undefined
@@ -149,15 +149,15 @@ export function DashboardPage({
           }
         />
         <MetricCard
-          label="Produk Berisiko / Rugi"
+          label="Produk Perlu Dicek"
           value={String(summary.atRiskCount)}
-          hint={summary.atRiskCount > 0 ? 'Margin di bawah target aman' : 'Semua produk aman'}
+          hint={summary.atRiskCount > 0 ? 'Margin di bawah target toko' : 'Semua produk aman'}
           accent={summary.atRiskCount > 0 ? 'loss' : 'safe'}
         />
         <MetricCard
-          label="Akumulasi Laba / Unit"
+          label="Akumulasi Laba per Pcs"
           value={formatRupiah(summary.totalProfitPerUnit)}
-          hint="Jika masing-masing terjual 1 pcs"
+          hint="Jika tiap kue laku terjual 1 buah"
           accent="terracotta"
         />
       </div>
@@ -167,8 +167,8 @@ export function DashboardPage({
         {/* Daftar Produk */}
         <Card className="lg:col-span-2">
           <CardHeader
-            title="Status Margin Produk"
-            subtitle="Klik produk untuk membuka simulasi diskon di kalkulator"
+            title="Daftar Margin Produk"
+            subtitle="Klik nama kue untuk menguji simulasi diskon di kalkulator"
             action={
               state.products.length > 0 ? (
                 <button
@@ -185,9 +185,9 @@ export function DashboardPage({
           {evaluated.length === 0 ? (
             <div className="rounded-xl border border-dashed border-cream-dark bg-ivory/70 p-6 text-center">
               <IconBox className="mx-auto text-muted" size={28} />
-              <h3 className="mt-2.5 text-sm font-semibold text-espresso">Belum ada produk yang disimpan</h3>
+              <h3 className="mt-2.5 text-sm font-semibold text-espresso">Belum ada kue yang dicatat</h3>
               <p className="mx-auto mt-1 max-w-md text-xs text-muted">
-                Mulai hitung margin kue pertama Anda di Kalkulator, atau muat contoh produk simulasi untuk melihat cara kerja dashboard.
+                Mulai hitung margin kue pertama Anda di Kalkulator, atau muat data contoh simulasi untuk melihat cara kerjanya.
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-2.5">
                 <button
@@ -223,7 +223,7 @@ export function DashboardPage({
                     </div>
                     <p className="mt-0.5 text-xs text-muted">
                       {platform.name} · Jual {formatRupiah(product.price)}
-                      {product.discountPct > 0 ? ` (diskon ${product.discountPct}%)` : ''} · HPP{' '}
+                      {product.discountPct > 0 ? ` (diskon ${product.discountPct}%)` : ''} · Modal{' '}
                       {formatRupiah(product.hpp + product.packaging)}
                     </p>
                   </div>
@@ -246,8 +246,8 @@ export function DashboardPage({
         <div className="space-y-5">
           <Card>
             <CardHeader
-              title="Tarif Platform"
-              subtitle="Sumber perhitungan potongan"
+              title="Potongan Komisi Aplikasi"
+              subtitle="Dasar potongan tiap pesanan"
               action={
                 <button
                   type="button"
@@ -277,9 +277,9 @@ export function DashboardPage({
           </Card>
 
           <Card>
-            <CardHeader title="Aktivitas Terbaru" subtitle="Tersimpan lokal di browser" />
+            <CardHeader title="Catatan Aktivitas" subtitle="Tersimpan di perangkat ini" />
             {state.activity.length === 0 ? (
-              <p className="text-xs text-muted">Belum ada aktivitas tercatat.</p>
+              <p className="text-xs text-muted">Belum ada catatan terbaru.</p>
             ) : (
               <ul className="space-y-2.5">
                 {state.activity.slice(0, 5).map((act) => (

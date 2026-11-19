@@ -85,19 +85,19 @@ export function ReversePricePage({
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">ReversePrice Planner</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Hitung Balik Harga</p>
         <h1 className="mt-1 font-[var(--font-display)] text-2xl font-bold tracking-tight text-espresso sm:text-3xl">
           Hitung Harga Jual dari Target Laba
         </h1>
         <p className="mt-1 text-sm text-muted">
-          Tentukan target margin atau laba bersih per kue terlebih dahulu — sistem menghitungkan harga jual yang aman saat ikut promo.
+          Mau untung berapa rupiah per loyang kue? Tentukan target labanya, kalkulator ini akan hitungkan harga pasang yang aman di aplikasi.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Form Input */}
         <Card className="lg:col-span-5">
-          <CardHeader title="Parameter Target" subtitle="Pilih target margin (%) atau target laba (Rp)" />
+          <CardHeader title="Target Keuntungan" subtitle="Pilih mau patokan margin (%) atau laba bersih (Rp)" />
 
           <div className="space-y-4">
             {/* Switch Mode */}
@@ -118,19 +118,19 @@ export function ReversePricePage({
                   mode === 'profit' ? 'bg-surface text-espresso shadow-xs' : 'text-muted hover:text-espresso'
                 }`}
               >
-                Target Laba (Rp)
+                Target Laba Bersih (Rp)
               </button>
             </div>
 
             <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-              <RupiahInput label="HPP Bahan &amp; Produksi" value={hpp} onChange={setHpp} />
-              <RupiahInput label="Kemasan / Box" value={packaging} onChange={setPackaging} />
+              <RupiahInput label="Modal Bahan (HPP)" value={hpp} onChange={setHpp} />
+              <RupiahInput label="Kemasan &amp; Box" value={packaging} onChange={setPackaging} />
             </div>
 
             <div>
               <div className="flex items-center justify-between">
                 <label htmlFor="rev-platform" className="text-xs font-semibold text-espresso">
-                  Platform Penjualan
+                  Pilih Aplikasi
                 </label>
                 <PlatformConfiguredBadge configured={platform.configured} />
               </div>
@@ -157,7 +157,7 @@ export function ReversePricePage({
               />
             ) : (
               <RupiahInput
-                label="Target Laba Bersih per Unit"
+                label="Target Laba Bersih per Kue"
                 value={targetProfit}
                 onChange={setTargetProfit}
                 helper="Keuntungan bersih yang ingin masuk kantong per kue"
@@ -170,7 +170,7 @@ export function ReversePricePage({
             </div>
 
             <div>
-              <span className="block text-xs font-semibold text-espresso">Pembulatan Harga ke Atas</span>
+              <span className="block text-xs font-semibold text-espresso">Opsi Pembulatan Harga ke Atas</span>
               <div className="mt-1.5 flex gap-2">
                 {ROUNDING_STEPS.map((step) => (
                   <button
@@ -194,7 +194,7 @@ export function ReversePricePage({
         {/* Hasil Reverse Pricing */}
         <div className="space-y-5 lg:col-span-7">
           <Card>
-            <CardHeader title="Rekomendasi Harga Jual" subtitle="Dibulatkan ke atas agar margin tidak turun di bawah target" />
+            <CardHeader title="Rekomendasi Harga Pasang" subtitle="Harga sebelum diskon yang harus dipasang di etalase aplikasi" />
 
             {!validBase ? (
               <p className="text-sm text-loss">Pastikan HPP &gt; Rp0 dan diskon antara 0%–99%.</p>
@@ -247,7 +247,7 @@ export function ReversePricePage({
                 {breakEven && breakEven.ok && (
                   <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-cream-dark/70 bg-ivory/80 px-4 py-3 text-xs">
                     <span className="text-muted">
-                      Titik Impas / Break-Even (laba Rp0 pada skema diskon ini):
+                      Titik Impas (laba Rp0 jika diskon tetap berjalan):
                     </span>
                     <strong className="num text-sm text-espresso">{formatRupiah(roundUpTo(breakEven.price, 100))}</strong>
                   </div>
@@ -268,7 +268,7 @@ export function ReversePricePage({
                   }
                   className="w-full cursor-pointer rounded-xl bg-espresso px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-espresso-light"
                 >
-                  Terapkan Harga Ini ke Kalkulator Margin
+                  Buka &amp; Cek Harga Ini di Kalkulator Margin
                 </button>
               </div>
             ) : null}
@@ -277,8 +277,8 @@ export function ReversePricePage({
           {/* Cek Batas Maksimal Diskon */}
           <Card>
             <CardHeader
-              title="Cek Batas Maksimal Diskon"
-              subtitle={`Berapa diskon terbesar yang boleh dipasang tanpa melanggar target minimal ${state.settings.targetMinPct}%?`}
+              title="Batas Maksimal Diskon yang Aman"
+              subtitle={`Berapa persen diskon paling mentok yang boleh diberikan agar margin tidak jebol di bawah ${state.settings.targetMinPct}%?`}
             />
             <div className="grid gap-4 sm:grid-cols-2 sm:items-end">
               <RupiahInput
@@ -299,7 +299,7 @@ export function ReversePricePage({
                   </>
                 ) : (
                   <p className="text-xs font-medium text-loss">
-                    Harga jual ini belum mencapai margin minimal {state.settings.targetMinPct}% meski tanpa diskon.
+                    Harga jual ini belum mencapai target untung minimal {state.settings.targetMinPct}% meski tanpa diskon.
                   </p>
                 )}
               </div>

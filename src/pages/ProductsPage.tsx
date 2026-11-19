@@ -48,12 +48,12 @@ export function ProductsPage({
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Katalog Produk</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-terracotta">Katalog Toko</p>
           <h1 className="mt-1 font-[var(--font-display)] text-2xl font-bold tracking-tight text-espresso sm:text-3xl">
-            Produk Tersimpan
+            Daftar Kue Tersimpan
           </h1>
           <p className="mt-1 text-sm text-muted">
-            Kelola daftar kue, cek status margin tiap produk, dan buka kembali untuk simulasi promo.
+            Kelola daftar kue, pantau status margin tiap menu, dan buka kembali untuk menguji promo baru.
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export function ProductsPage({
               onClick={clearDemoProducts}
               className="cursor-pointer rounded-xl border border-cream-dark bg-surface px-3.5 py-2 text-xs font-semibold text-muted transition hover:text-espresso"
             >
-              Hapus Simulasi
+              Hapus Data Contoh
             </button>
           ) : (
             <button
@@ -81,7 +81,7 @@ export function ProductsPage({
             className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-terracotta px-4 py-2 text-xs font-semibold text-white transition hover:bg-terracotta-hover"
           >
             <IconPlus size={15} />
-            Tambah Produk
+            Tambah Kue Baru
           </button>
         </div>
       </div>
@@ -98,7 +98,7 @@ export function ProductsPage({
         <div className="flex flex-wrap gap-1.5">
           {(
             [
-              ['all', 'Semua'],
+              ['all', 'Semua Kue'],
               ['safe', 'Aman'],
               ['below', 'Di Bawah Target'],
               ['loss', 'Rugi'],
@@ -124,10 +124,10 @@ export function ProductsPage({
       {list.length === 0 ? (
         <Card className="py-10 text-center">
           <IconBox className="mx-auto text-muted" size={30} />
-          <p className="mt-2.5 text-sm font-semibold text-espresso">Tidak ada produk yang cocok</p>
+          <p className="mt-2.5 text-sm font-semibold text-espresso">Belum ada kue yang cocok</p>
           <p className="mt-1 text-xs text-muted">
             {state.products.length === 0
-              ? 'Simpan produk dari Kalkulator Margin atau muat contoh simulasi.'
+              ? 'Simpan kue pertama Anda dari Kalkulator Margin atau muat data contoh simulasi.'
               : 'Coba ubah kata kunci pencarian atau filter status.'}
           </p>
         </Card>
@@ -149,13 +149,13 @@ export function ProductsPage({
 
                 <dl className="mt-4 grid grid-cols-2 gap-2.5 rounded-xl bg-ivory p-3 text-xs">
                   <div>
-                    <dt className="text-muted">HPP + Kemasan</dt>
+                    <dt className="text-muted">Modal (Bahan + Box)</dt>
                     <dd className="num font-semibold text-espresso">
                       {formatRupiah(product.hpp + product.packaging)}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-muted">Harga Jual</dt>
+                    <dt className="text-muted">Harga Pasang</dt>
                     <dd className="num font-semibold text-espresso">
                       {formatRupiah(product.price)}
                       {product.discountPct > 0 ? ` (-${product.discountPct}%)` : ''}
@@ -180,7 +180,7 @@ export function ProductsPage({
                   onClick={() => onOpenInCalc(product.id)}
                   className="flex-1 cursor-pointer rounded-xl bg-cream px-3 py-2 text-xs font-semibold text-espresso transition hover:bg-cream-dark"
                 >
-                  Simulasikan
+                  Uji Promo di Kalkulator
                 </button>
                 <button
                   type="button"
