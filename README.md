@@ -36,4 +36,16 @@ npm run build
 - [`docs/lkpd/`](./docs/lkpd) — Dokumen asli LKPD 3, LKPD 4, dan LKPD 5.
 
 ## Deployment (Vercel)
-Proyek ini sudah dilengkapi [`vercel.json`](./vercel.json) dengan `buildCommand: "npm run test && npm run build"` dan `outputDirectory: "dist"`. Cukup hubungkan repository GitHub ke Vercel dan deploy otomatis akan berjalan.
+
+Proyek ini telah dikonfigurasi siap pakai untuk Vercel:
+- [`vercel.json`](./vercel.json): Mengatur framework `vite`, build pipeline otomatis (`npm ci` & `npm run test && npm run build`), SPA rewrites fallback, dan HTTP security / cache headers.
+- [`.vercelignore`](./.vercelignore): Mencegah berkas non-produksi terunggah.
+- `package.json`: Menentukan target mesin Node.js (`>=20.0.0`).
+
+### Langkah Deploy via Vercel Dashboard:
+1. Buka [vercel.com](https://vercel.com) dan login.
+2. Klik tombol **Add New...** > **Project**.
+3. Hubungkan akun GitHub dan pilih repositori `rafitacake`.
+4. Framework Preset akan otomatis terdeteksi sebagai **Vite**.
+5. Tidak perlu mengubah Build and Output Settings karena semua konfigurasi sudah terdefinisi di `vercel.json`.
+6. Klik **Deploy**.

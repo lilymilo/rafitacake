@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "description": "RAFITACAKE — kalkulator margin, reverse pricing, dan simulasi biaya platform untuk penjual kue online.",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
